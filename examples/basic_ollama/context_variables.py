@@ -1,4 +1,4 @@
-from swarm.core import Swarm, Agent
+from swarm_ollama.core import Swarm, Agent
 import ollama
 from typing import List, Dict, Any
 import json
@@ -42,8 +42,8 @@ class OllamaWrapper:
 
             return WrappedResponse(response)
 
-    def __getattr__(self, name):
-        return getattr(self.client, name)
+        def __getattr__(self, name):
+            return getattr(self.client, name)
 
 # Initialize Ollama client
 ollama_client = ollama.Client(host="http://localhost:11434")
@@ -54,63 +54,71 @@ wrapped_client = OllamaWrapper(ollama_client)
 # Initialize Swarm with wrapped client
 client = Swarm(client=wrapped_client)
 
-def get_weather(location) -> str:
-    return "{'temp':67, 'unit':'F'}"
+def instructions(context_variables):
+    context = context_variables.copy()
+    tool_call = context.pop('llama_tool_call', '')
+    name = context.get("name", "User")
+       # Create the system prompt with the function definition
+    return f"""You are a helpful agent. Greet the user by name ({name}). You can use the following function to print account details:
 
-# Define the function in the format expected by Llama 3.2
+    {tool_call}
+
+    If you need to use the function, format your response as. please note that the context variables is already given to you! 
+    You just need to the information EXACTLY as below:
+    [print_account_details({context})]
+
+    Only use the function when necessary when using it ONLY RETURN THE FUNCTION CALL, and provide a natural language response after using it."""
+
+
+def print_account_details(context_variables: dict):
+    user_id = context_variables.get("user_id", None)
+    name = context_variables.get("name", None)
+    print(f"Account Details: {name} {user_id}")
+    return "Success"
+
 llama_tool_call = """[
     {
-        "name": "get_weather",
-        "description": "Get the weather for a specific location",
+        "name": "print_account_details",
+        "description": "Print the account details for a user",
         "parameters": {
             "type": "object",
-            "required": ["location"],
             "properties": {
-                "location": {
+                "name": {
                     "type": "string",
-                    "description": "The location to get weather for"
+                    "description": "The name of the user"
+                },
+                "user_id": {
+                    "type": "integer",
+                    "description": "The user ID"
                 }
-            }
+            },
+            "required": ["name", "user_id"]
         }
     }
 ]"""
 
-# Create the system prompt with the function definition
-instructions = f"""You are a helpful agent. You can use the following function to get weather information:
-
-{llama_tool_call}
-
-If you need to use the function, format your response as:
-[get_weather(location="<location>")]
-
-Only use the function when necessary, and provide a natural language response after using it."""
-
+context_variables = {
+    "name": "James", 
+    "user_id": 123,
+    "llama_tool_call": llama_tool_call
+}
 agent = Agent(
     name="Agent",
     model="llama3.2:3b",
     instructions=instructions,
-    functions=[get_weather],  # We still pass the function, but it won't be used directly by Llama 3.2
+    functions=[print_account_details],
 )
 
-messages = [{"role": "user", "content": "What's the weather in NYC?"}]
 
-response = client.run(agent=agent, messages=messages)
+response = client.run(
+    messages=[{"role": "user", "content": "Hi! what are my account details?"}],
+    agent=agent,
+    context_variables=context_variables,
+)
+
+# Execute the function call
+if "[print_account_details(" in response.messages[-1]["content"]:
+    result = print_account_details(context_variables)
+    print(result)
+
 #print(response.messages[-1]["content"])
-
-# Parse the response to check if the function was called
-response_content = response.messages[-1]["content"]
-if "[get_weather(" in response_content:
-    # Extract the function call
-    start = response_content.index("[get_weather(")
-    end = response_content.index(")]", start) + 2
-    function_call = response_content[start:end]
-    
-    # Execute the function
-    exec(f"result = {function_call}")
-    weather_data = eval("result")
-    
-    # Update the response with the actual weather data
-    updated_response = response_content.replace(function_call, f"The weather in NYC is {weather_data}")
-    print(updated_response)
-else:
-    print("Function was not called in the response")

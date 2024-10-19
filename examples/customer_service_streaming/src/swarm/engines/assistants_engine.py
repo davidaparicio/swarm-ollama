@@ -4,7 +4,7 @@ from src.utils import get_completion
 from configs.general import Colors
 from configs.prompts import TRIAGE_SYSTEM_PROMPT, TRIAGE_MESSAGE_PROMPT, EVALUATE_TASK_PROMPT
 import time
-from src.swarm.assistants import Assistant
+from src.swarm_ollama.assistants import Assistant
 from src.tasks.task import EvaluationTask
 from openai import OpenAI
 import importlib

@@ -3,8 +3,8 @@ import re
 import qdrant_client
 from openai import OpenAI
 
-from swarm import Agent
-from swarm.repl import run_demo_loop
+from swarm_ollama import Agent
+from swarm_ollama.repl import run_demo_loop
 
 # Initialize connections
 client = OpenAI()

@@ -1,4 +1,4 @@
-from swarm import Swarm
+from swarm_ollama import Swarm
 from agents import weather_agent
 import pytest
 

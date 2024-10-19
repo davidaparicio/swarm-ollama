@@ -1,5 +1,5 @@
 import pytest
-from swarm import Swarm, Agent
+from swarm_ollama import Swarm, Agent
 from tests.mock_client import MockOpenAIClient, create_mock_response
 from unittest.mock import Mock
 import json
