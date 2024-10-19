@@ -7,7 +7,7 @@ from openai import OpenAI
 from qdrant_client.http import models as rest
 
 client = OpenAI()
-GPT_MODEL = "gpt-4o"
+GPT_MODEL = "llama3.2:3b"
 EMBEDDING_MODEL = "text-embedding-3-large"
 
 article_list = os.listdir("data")

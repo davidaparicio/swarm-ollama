@@ -1,8 +1,8 @@
 import json
 from openai import OpenAI
 from src.tasks.task import Task, EvaluationTask
-from src.swarm.engines.assistants_engine import AssistantsEngine
-from src.swarm.engines.local_engine import LocalEngine
+from src.swarm_ollama.engines.assistants_engine import AssistantsEngine
+from src.swarm_ollama.engines.local_engine import LocalEngine
 from configs.general import Colors, tasks_path
 
 # This class represents the main control unit for deploying and managing tasks within the swarm system.

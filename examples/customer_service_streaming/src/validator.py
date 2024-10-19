@@ -1,8 +1,8 @@
 import os
 import importlib
 import json
-from src.swarm.tool import Tool
-from src.swarm.assistants import Assistant
+from src.swarm_ollama.tool import Tool
+from src.swarm_ollama.assistants import Assistant
 
 def validate_tool(tool_definition):
     # Validate the tool using its schema

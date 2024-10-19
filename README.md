@@ -14,21 +14,26 @@ An educational framework exploring ergonomic, lightweight multi-agent orchestrat
 Requires Python 3.10+
 
 ```shell
-pip install git+ssh://git@github.com/openai/swarm.git
+#pip install git+ssh://git@github.com/openai/swarm_ollama.git
+#pip install git+ssh://git@github.com/yashgadbail/swarm-ollama.git
+pip install git+ssh://git@github.com/davidaparicio/swarm-ollama.git
 ```
 
 or
 
 ```shell
-pip install git+https://github.com/openai/swarm.git
+#pip install git+https://github.com/openai/swarm_ollama.git
+#pip install git+https://github.com/yashgadbail/swarm-ollama.git
+pip install git+https://git@github.com/davidaparicio/swarm-ollama.git
 ```
 
 ## Usage
 
 ```python
-from swarm import Swarm, Agent
+from swarm_ollama import Swarm, Agent
 
-client = Swarm()
+#client = Swarm()
+client = Swarm(base_url="http://<your-ip>:11434")
 
 def transfer_to_agent_b():
     return agent_b
@@ -108,9 +113,9 @@ Check out `/examples` for inspiration! Learn more about each one in its README.
 Start by instantiating a Swarm client (which internally just instantiates an `OpenAI` client).
 
 ```python
-from swarm import Swarm
+from swarm_ollama import Swarm
 
-client = Swarm()
+client = Swarm(base_url="http://<your-ip>:11434")
 ```
 
 ### `client.run()`
@@ -159,7 +164,7 @@ While it's tempting to personify an `Agent` as "someone who does X", it can also
 | Field            | Type                     | Description                                                                   | Default                      |
 | ---------------- | ------------------------ | ----------------------------------------------------------------------------- | ---------------------------- |
 | **name**         | `str`                    | The name of the agent.                                                        | `"Agent"`                    |
-| **model**        | `str`                    | The model to be used by the agent.                                            | `"gpt-4o"`                   |
+| **model**        | `str`                    | The model to be used by the agent.                                            | `"llama3.2:3b"`                   |
 | **instructions** | `str` or `func() -> str` | Instructions for the agent, can be a string or a callable returning a string. | `"You are a helpful agent."` |
 | **functions**    | `List`                   | A list of functions that the agent can call.                                  | `[]`                         |
 | **tool_choice**  | `str`                    | The tool choice for the agent, if any.                                        | `None`                       |
@@ -344,7 +349,7 @@ Evaluations are crucial to any project, and we encourage developers to bring the
 Use the `run_demo_loop` to test out your swarm! This will run a REPL on your command line. Supports streaming.
 
 ```python
-from swarm.repl import run_demo_loop
+from swarm_ollama.repl import run_demo_loop
 ...
 run_demo_loop(agent, stream=True)
 ```
@@ -357,3 +362,7 @@ run_demo_loop(agent, stream=True)
 - Charu Jaiswal - [charuj](https://github.com/charuj)
 - Colin Jarvis - [colin-openai](https://github.com/colin-openai)
 - Katia Gil Guzman - [katia-openai](https://github.com/katia-openai)
+
+# Inspired by
+- Arrabonae - [Arrabonae](https://github.com/Arrabonae)
+- Yash Gadbail - [yashgadbail](https://github.com/yashgadbail)

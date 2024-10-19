@@ -1,6 +1,6 @@
 import json
 
-from swarm import Agent
+from swarm_ollama import Agent
 
 
 def get_weather(location, time="now"):

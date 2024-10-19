@@ -1,4 +1,4 @@
-from swarm import Swarm
+from swarm_ollama import Swarm
 from agents import triage_agent, sales_agent, refunds_agent
 from evals_util import evaluate_with_llm_bool, BoolEvalResult
 import pytest

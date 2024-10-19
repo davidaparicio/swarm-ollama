@@ -5,7 +5,8 @@ from collections import defaultdict
 from typing import List, Callable, Union
 
 # Package/library imports
-from openai import OpenAI
+import ollama
+#from openai import OpenAI
 
 
 # Local imports
@@ -22,12 +23,56 @@ from .types import (
 
 __CTX_VARS_NAME__ = "context_variables"
 
+class OllamaWrapper:
+    def __init__(self, client):
+        self.client = client
+        self.chat = self.ChatCompletions(client)
+
+    class ChatCompletions:
+        def __init__(self, client):
+            self.client = client
+            self.completions = self
+
+        def create(self, **kwargs):
+            ollama_kwargs = {
+                "model": kwargs.get("model"),
+                "messages": kwargs.get("messages"),
+                "stream": kwargs.get("stream", False),
+            }
+
+            response = self.client.chat(**ollama_kwargs)
+
+            class WrappedResponse:
+                def __init__(self, ollama_response):
+                    self.choices = [
+                        type('Choice', (), {
+                            'message': type('Message', (), {
+                                'content': ollama_response['message']['content'],
+                                'role': ollama_response['message']['role'],
+                                'tool_calls': None,  # Ollama doesn't support tool calls
+                                'model_dump_json': lambda: json.dumps({
+                                    'content': ollama_response['message']['content'],
+                                    'role': ollama_response['message']['role'],
+                                })
+                            })
+                        })
+                    ]
+
+            return WrappedResponse(response)
+
+    def __getattr__(self, name):
+        return getattr(self.client, name)
 
 class Swarm:
-    def __init__(self, client=None):
-        if not client:
-            client = OpenAI()
-        self.client = client
+    def __init__(self, base_url):
+        ollama_client = ollama.Client(host=base_url)
+        wrapped_client = OllamaWrapper(ollama_client)
+        client = wrapped_client
+    
+    #def __init__(self, client=None):
+        #if not client:
+        #    client = OpenAI()
+        #self.client = client
 
     def get_chat_completion(
         self,

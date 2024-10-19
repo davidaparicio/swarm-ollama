@@ -1,6 +1,6 @@
 import json
 
-from swarm import Swarm
+from swarm_ollama import Swarm
 
 
 def process_and_print_streaming_response(response):

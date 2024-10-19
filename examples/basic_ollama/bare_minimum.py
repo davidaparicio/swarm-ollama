@@ -1,4 +1,4 @@
-from swarm.core import Swarm, Agent
+from swarm_ollama.core import Swarm, Agent
 import ollama
 from typing import List, Dict, Any
 import json

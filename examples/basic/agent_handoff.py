@@ -1,4 +1,4 @@
-from swarm import Swarm, Agent
+from swarm_ollama import Swarm, Agent
 
 client = Swarm()
 

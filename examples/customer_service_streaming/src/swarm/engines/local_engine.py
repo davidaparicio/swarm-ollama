@@ -4,8 +4,8 @@ import os
 from configs.prompts import TRIAGE_MESSAGE_PROMPT, TRIAGE_SYSTEM_PROMPT, EVAL_GROUNDTRUTH_PROMPT, EVAL_PLANNING_PROMPT, ITERATE_PROMPT
 from src.utils import get_completion, is_dict_empty
 from configs.general import Colors, max_iterations
-from src.swarm.assistants import Assistant
-from src.swarm.tool import Tool
+from src.swarm_ollama.assistants import Assistant
+from src.swarm_ollama.tool import Tool
 from src.tasks.task import EvaluationTask
 from src.runs.run import Run
 

@@ -1,11 +1,11 @@
 from unittest.mock import MagicMock
-from swarm.types import ChatCompletionMessage, ChatCompletionMessageToolCall, Function
+from swarm_ollama.types import ChatCompletionMessage, ChatCompletionMessageToolCall, Function
 from openai import OpenAI
 from openai.types.chat.chat_completion import ChatCompletion, Choice
 import json
 
 
-def create_mock_response(message, function_calls=[], model="gpt-4o"):
+def create_mock_response(message, function_calls=[], model="llama3.2:3b"):
     role = message.get("role", "assistant")
     content = message.get("content", "")
     tool_calls = (

@@ -2,7 +2,7 @@ import datetime
 import json
 import uuid
 
-from swarm import Swarm
+from swarm_ollama import Swarm
 
 
 def run_function_evals(agent, test_cases, n=1, eval_path=None):

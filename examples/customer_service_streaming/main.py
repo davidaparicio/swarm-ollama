@@ -1,6 +1,6 @@
 import shlex
 import argparse
-from src.swarm.swarm import Swarm
+from src.swarm_ollama.swarm import Swarm
 from src.tasks.task import Task
 from configs.general import test_root, test_file, engine_name, persist
 from src.validator import validate_all_tools, validate_all_assistants
@@ -25,7 +25,7 @@ def main():
         else:
             test_file_paths = [f"{test_root}/{file}" for file in test_files]
         swarm = Swarm(engine_name='local')
-        swarm.deploy(test_mode=True, test_file_paths=test_file_paths)
+        swarm_ollama.deploy(test_mode=True, test_file_paths=test_file_paths)
 
     elif args.input:
         # Interactive mode for adding tasks
@@ -53,17 +53,17 @@ def main():
                             iterate=task_parsed_args.iterate,
                             evaluate=task_parsed_args.evaluate,
                             assistant=task_parsed_args.assistant)
-            swarm.add_task(new_task)
+            swarm_ollama.add_task(new_task)
 
             # Deploy Swarm with the new task
-            swarm.deploy()
-            swarm.tasks.clear()
+            swarm_ollama.deploy()
+            swarm_ollama.tasks.clear()
 
     else:
         # Load predefined tasks if any
         # Deploy the Swarm for predefined tasks
-        swarm.load_tasks()
-        swarm.deploy()
+        swarm_ollama.load_tasks()
+        swarm_ollama.deploy()
 
     print("\n\n🍯🐝🍯 Swarm operations complete 🍯🐝🍯\n\n")
 

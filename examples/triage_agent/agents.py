@@ -1,4 +1,4 @@
-from swarm import Agent
+from swarm_ollama import Agent
 
 
 def process_refund(item_id, reason="NOT SPECIFIED"):
