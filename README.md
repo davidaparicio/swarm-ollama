@@ -46,12 +46,14 @@ def transfer_to_agent_b():
 
 agent_a = Agent(
     name="Agent A",
+    model="llama3.2:3b",
     instructions="You are a helpful agent.",
     functions=[transfer_to_agent_b],
 )
 
 agent_b = Agent(
     name="Agent B",
+    model="tinyllama:1.1b",
     instructions="Only speak in Haikus.",
 )
 
@@ -115,12 +117,14 @@ Check out `/examples` for inspiration! Learn more about each one in its README.
 
 ## Running Swarm
 
-Start by instantiating a Swarm client (which internally just instantiates an `OpenAI` client).
+Start by instantiating a Swarm client (which internally just instantiates an `Ollama` client).
 
 ```python
 from swarm_ollama import Swarm
 
-client = Swarm(base_url="http://<your-ip>:11434")
+client = Swarm()
+## IF NEEDED, you change surcharge the base_url with the OLLAMA_URL
+# client = Swarm(base_url="http://<your-ip>:11434")
 ```
 
 ### `client.run()`
