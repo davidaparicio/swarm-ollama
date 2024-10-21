@@ -1,0 +1,11 @@
+beautifulsoup4>=4.12.3
+colorama>=0.4.6
+langchain>=0.3.4
+langchain-community>=0.3.2
+langchain-core>=0.3.12
+langchain-ollama>=0.2.0
+langchain-openai>=0.2.3
+langchain-text-splitters>=0.3.0
+langsmith>=0.1.136
+openai>=1.52.0
+scikit-learn>=1.5.2

@@ -1,58 +1,7 @@
 from swarm_ollama.core import Swarm, Agent
-import ollama
-from typing import List, Dict, Any
-import json
 
-class OllamaWrapper:
-    def __init__(self, client):
-        self.client = client
-        self.chat = self.ChatCompletions(client)
 
-    class ChatCompletions:
-        def __init__(self, client):
-            self.client = client
-            self.completions = self
-
-        def create(self, **kwargs):
-            # Map Swarm parameters to Ollama parameters
-            ollama_kwargs = {
-                "model": kwargs.get("model"),
-                "messages": kwargs.get("messages"),
-                "stream": kwargs.get("stream", False),
-            }
-            
-            response = self.client.chat(**ollama_kwargs)
-            
-            # Wrap the Ollama response to match OpenAI's structure
-            class WrappedResponse:
-                def __init__(self, ollama_response):
-                    self.choices = [
-                        type('Choice', (), {
-                            'message': type('Message', (), {
-                                'content': ollama_response['message']['content'],
-                                'role': ollama_response['message']['role'],
-                                'tool_calls': None,  # Ollama doesn't support tool calls
-                                'model_dump_json': lambda: json.dumps({
-                                    'content': ollama_response['message']['content'],
-                                    'role': ollama_response['message']['role'],
-                                })
-                            })
-                        })
-                    ]
-
-            return WrappedResponse(response)
-
-        def __getattr__(self, name):
-            return getattr(self.client, name)
-
-# Initialize Ollama client
-ollama_client = ollama.Client(host="http://localhost:11434")
-
-# Wrap Ollama client
-wrapped_client = OllamaWrapper(ollama_client)
-
-# Initialize Swarm with wrapped client
-client = Swarm(client=wrapped_client)
+client = Swarm()
 
 english_agent = Agent(
     name="English Agent",
@@ -66,9 +15,11 @@ spanish_agent = Agent(
     instructions="You only speak Spanish.",
 )
 
+
 def transfer_to_spanish_agent():
     """Transfer spanish speaking users immediately."""
     return spanish_agent
+
 
 llama_tool_call = """[{
         "name": "transfer_to_spanish_agent",
@@ -98,4 +49,4 @@ if "[transfer_to_spanish_agent(" in response.messages[-1]["content"]:
     transfer_agent = transfer_to_spanish_agent()
     result = client.run(agent=transfer_agent, messages=response.messages)
     print(result.messages[-1]["content"])
-#print(response.messages[-1]["content"])
+# print(response.messages[-1]["content"])

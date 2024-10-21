@@ -13,17 +13,19 @@ An educational framework exploring ergonomic, lightweight multi-agent orchestrat
 
 Requires Python 3.10+
 
+<!--#pip install git+ssh://git@github.com/openai/swarm_ollama.git
+#pip install git+ssh://git@github.com/yashgadbail/swarm-ollama.git-->
+
 ```shell
-#pip install git+ssh://git@github.com/openai/swarm_ollama.git
-#pip install git+ssh://git@github.com/yashgadbail/swarm-ollama.git
 pip install git+ssh://git@github.com/davidaparicio/swarm-ollama.git
 ```
 
 or
 
+<!--#pip install git+https://github.com/openai/swarm_ollama.git
+#pip install git+https://github.com/yashgadbail/swarm-ollama.git-->
+
 ```shell
-#pip install git+https://github.com/openai/swarm_ollama.git
-#pip install git+https://github.com/yashgadbail/swarm-ollama.git
 pip install git+https://git@github.com/davidaparicio/swarm-ollama.git
 ```
 
@@ -32,8 +34,9 @@ pip install git+https://git@github.com/davidaparicio/swarm-ollama.git
 ```python
 from swarm_ollama import Swarm, Agent
 
-#client = Swarm()
-client = Swarm(base_url="http://<your-ip>:11434")
+client = Swarm()
+## IF NEEDED, you change surcharge the base_url with the OLLAMA_URL
+# client = Swarm(base_url="http://<your-ip>:11434")
 
 def transfer_to_agent_b():
     return agent_b

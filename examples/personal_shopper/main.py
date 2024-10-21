@@ -94,7 +94,7 @@ database.preview_table("Products")
 
 refunds_agent = Agent(
     name="Refunds Agent",
-    description=f"""You are a refund agent that handles all actions related to refunds after a return has been processed.
+    description="""You are a refund agent that handles all actions related to refunds after a return has been processed.
     You must ask for both the user ID and item ID to initiate a refund. Ask for both user_id and item_id in one message.
     If the user asks you to notify them, you must ask them what their preferred method of notification is. For notifications, you must
     ask them for user_id and method in one message.""",
@@ -103,7 +103,7 @@ refunds_agent = Agent(
 
 sales_agent = Agent(
     name="Sales Agent",
-    description=f"""You are a sales agent that handles all actions related to placing an order to purchase an item.
+    description="""You are a sales agent that handles all actions related to placing an order to purchase an item.
     Regardless of what the user wants to purchase, must ask for BOTH the user ID and product ID to place an order.
     An order cannot be placed without these two pieces of information. Ask for both user_id and product_id in one message.
     If the user asks you to notify them, you must ask them what their preferred method is. For notifications, you must
@@ -114,7 +114,7 @@ sales_agent = Agent(
 
 triage_agent = create_triage_agent(
     name="Triage Agent",
-    instructions=f"""You are to triage a users request, and call a tool to transfer to the right intent.
+    instructions="""You are to triage a users request, and call a tool to transfer to the right intent.
     Once you are ready to transfer to the right intent, call the tool to transfer to the right intent.
     You dont need to know specifics, just the topic of the request.
     If the user request is about making an order or purchasing an item, transfer to the Sales Agent.

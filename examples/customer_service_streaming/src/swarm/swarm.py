@@ -1,6 +1,6 @@
 import json
 from openai import OpenAI
-from src.tasks.task import Task, EvaluationTask
+from src.tasks.task import Task
 from src.swarm_ollama.engines.assistants_engine import AssistantsEngine
 from src.swarm_ollama.engines.local_engine import LocalEngine
 from configs.general import Colors, tasks_path
@@ -21,25 +21,27 @@ class Swarm:
         """
         client = OpenAI()
         # Initialize swarm first
-        if self.engine_name == 'assistants':
+        if self.engine_name == "assistants":
             print(f"{Colors.GREY}Selected engine: Assistants{Colors.ENDC}")
             self.engine = AssistantsEngine(client, self.tasks)
             self.engine.deploy(client, test_mode, test_file_paths)
 
-        elif self.engine_name == 'local':
+        elif self.engine_name == "local":
             print(f"{Colors.GREY}Selected engine: Local{Colors.ENDC}")
             self.engine = LocalEngine(client, self.tasks, persist=self.persist)
             self.engine.deploy(client, test_mode, test_file_paths)
 
     def load_tasks(self):
         self.tasks = []
-        with open(tasks_path, 'r') as file:
+        with open(tasks_path, "r") as file:
             tasks_data = json.load(file)
             for task_json in tasks_data:
-                task = Task(description=task_json['description'],
-                            iterate=task_json.get('iterate', False),
-                            evaluate=task_json.get('evaluate', False),
-                            assistant=task_json.get('assistant', 'user_interface'))
+                task = Task(
+                    description=task_json["description"],
+                    iterate=task_json.get("iterate", False),
+                    evaluate=task_json.get("evaluate", False),
+                    assistant=task_json.get("assistant", "user_interface"),
+                )
                 self.tasks.append(task)
 
     def add_task(self, task):

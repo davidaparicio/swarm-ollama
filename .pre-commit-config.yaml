@@ -1,8 +1,35 @@
 repos:
-  - repo: https://github.com/hhatto/autopep8
-    rev: v2.1.0
-    hooks:
-      - id: autopep8
-        args:
-          - --in-place
-          - --aggressive
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.7.0
+  hooks:
+  # Run the linter.
+  - id: ruff
+    types_or: [ python, pyi ]
+    args: [ --fix ]
+  # Run the formatter.
+  - id: ruff-format
+    types_or: [ python, pyi ]
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v5.0.0
+  hooks:
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: check-added-large-files
+    args: ['--maxkb=400'] # (default=500kB)
+  - id: check-ast
+  - id: check-builtin-literals
+  - id: check-executables-have-shebangs
+  - id: check-yaml
+    args: [--allow-multiple-documents]
+  - id: debug-statements
+  - id: requirements-txt-fixer
+  - id: detect-aws-credentials
+    args: ["--allow-missing-credentials"] # Allow hook to pass when no credentials are detected
+- repo: https://github.com/PyCQA/bandit
+  rev: '1.7.10' # Update me!
+  hooks:
+  - id: bandit
+    name: security check for python (bandit)
+    description: 'Bandit is a tool for finding common security issues in Python code'
+    #args: ["-r", "app/"] #["-c", "pyproject.toml",
+    #additional_dependencies: ["bandit[toml]"]

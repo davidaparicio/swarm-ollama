@@ -2,11 +2,11 @@
 import copy
 import json
 from collections import defaultdict
-from typing import List, Callable, Union
+from typing import List
 
 # Package/library imports
 import ollama
-#from openai import OpenAI
+# from openai import OpenAI
 
 
 # Local imports
@@ -20,59 +20,35 @@ from .types import (
     Response,
     Result,
 )
+from .wrapper import (
+    OllamaWrapper,
+)
 
 __CTX_VARS_NAME__ = "context_variables"
 
-class OllamaWrapper:
-    def __init__(self, client):
-        self.client = client
-        self.chat = self.ChatCompletions(client)
+# Initialize Ollama client
+# ollama_client = ollama.Client(host="http://localhost:11434")
+# Wrap Ollama client
+# wrapped_client = OllamaWrapper(ollama_client)
+# Initialize Swarm with wrapped client
+# client = Swarm(client=wrapped_client)
 
-    class ChatCompletions:
-        def __init__(self, client):
-            self.client = client
-            self.completions = self
-
-        def create(self, **kwargs):
-            ollama_kwargs = {
-                "model": kwargs.get("model"),
-                "messages": kwargs.get("messages"),
-                "stream": kwargs.get("stream", False),
-            }
-
-            response = self.client.chat(**ollama_kwargs)
-
-            class WrappedResponse:
-                def __init__(self, ollama_response):
-                    self.choices = [
-                        type('Choice', (), {
-                            'message': type('Message', (), {
-                                'content': ollama_response['message']['content'],
-                                'role': ollama_response['message']['role'],
-                                'tool_calls': None,  # Ollama doesn't support tool calls
-                                'model_dump_json': lambda: json.dumps({
-                                    'content': ollama_response['message']['content'],
-                                    'role': ollama_response['message']['role'],
-                                })
-                            })
-                        })
-                    ]
-
-            return WrappedResponse(response)
-
-    def __getattr__(self, name):
-        return getattr(self.client, name)
 
 class Swarm:
-    def __init__(self, base_url):
-        ollama_client = ollama.Client(host=base_url)
-        wrapped_client = OllamaWrapper(ollama_client)
-        client = wrapped_client
-    
-    #def __init__(self, client=None):
-        #if not client:
-        #    client = OpenAI()
-        #self.client = client
+    def __init__(self, base_url="http://localhost:11434", client=None):
+        if not client:
+            try:
+                ollama_client = ollama.Client(host=base_url)
+                wrapped_client = OllamaWrapper(ollama_client)
+                self.client = wrapped_client
+            except:
+                raise ConnectionError(
+                    f"Failed to connect to Ollama at {base_url}. "
+                    "Make sure Ollama is running and the URL is correct. "
+                    f"Error: {str(e)}"
+                ) from e
+        else:
+            self.client = client
 
     def get_chat_completion(
         self,
@@ -139,8 +115,7 @@ class Swarm:
         debug: bool,
     ) -> Response:
         function_map = {f.__name__: f for f in functions}
-        partial_response = Response(
-            messages=[], agent=None, context_variables={})
+        partial_response = Response(messages=[], agent=None, context_variables={})
 
         for tool_call in tool_calls:
             name = tool_call.function.name
@@ -157,8 +132,7 @@ class Swarm:
                 )
                 continue
             args = json.loads(tool_call.function.arguments)
-            debug_print(
-                debug, f"Processing tool call: {name} with arguments {args}")
+            debug_print(debug, f"Processing tool call: {name} with arguments {args}")
 
             func = function_map[name]
             # pass context_variables to agent functions
@@ -197,7 +171,6 @@ class Swarm:
         init_len = len(messages)
 
         while len(history) - init_len < max_turns:
-
             message = {
                 "content": "",
                 "sender": agent.name,
@@ -233,8 +206,7 @@ class Swarm:
                 merge_chunk(message, delta)
             yield {"delim": "end"}
 
-            message["tool_calls"] = list(
-                message.get("tool_calls", {}).values())
+            message["tool_calls"] = list(message.get("tool_calls", {}).values())
             if not message["tool_calls"]:
                 message["tool_calls"] = None
             debug_print(debug, "Received completion:", message)
@@ -300,7 +272,6 @@ class Swarm:
         init_len = len(messages)
 
         while len(history) - init_len < max_turns and active_agent:
-
             # get completion with current history, agent
             completion = self.get_chat_completion(
                 agent=active_agent,

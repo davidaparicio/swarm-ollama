@@ -17,7 +17,7 @@ Here is the policy:
 """
 
 # Damaged
-FLIGHT_CANCELLATION_POLICY = f"""
+FLIGHT_CANCELLATION_POLICY = """
 1. Confirm which flight the customer is asking to cancel.
 1a) If the customer is asking about the same flight, proceed to next step.
 1b) If the customer is not, call 'escalate_to_agent' function.
@@ -30,7 +30,7 @@ FLIGHT_CANCELLATION_POLICY = f"""
 5. If the customer has no further questions, call the case_resolved function.
 """
 # Flight Change
-FLIGHT_CHANGE_POLICY = f"""
+FLIGHT_CHANGE_POLICY = """
 1. Verify the flight details and the reason for the change request.
 2. Call valid_to_change_flight function:
 2a) If the flight is confirmed valid to change: proceed to the next step.

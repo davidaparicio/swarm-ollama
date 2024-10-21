@@ -1,6 +1,9 @@
 from unittest.mock import MagicMock
-from swarm_ollama.types import ChatCompletionMessage, ChatCompletionMessageToolCall, Function
-from openai import OpenAI
+from swarm_ollama.types import (
+    ChatCompletionMessage,
+    ChatCompletionMessageToolCall,
+    Function,
+)
 from openai.types.chat.chat_completion import ChatCompletion, Choice
 import json
 
