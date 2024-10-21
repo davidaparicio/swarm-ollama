@@ -1,8 +1,10 @@
 ![Swarm Logo](assets/logo.png)
 
-# Swarm (experimental, educational)
+# Swarm-Ollama (experimental)
 
-An educational framework exploring ergonomic, lightweight multi-agent orchestration.
+The educational framework lightweight multi-agent orchestration with the [Ollama](https://github.com/ollama/ollama) wrapper.
+
+Current [Swarm version](https://github.com/openai/swarm): [latest/9db581cecaacea0d46a933d6453c312b034dbf47](https://github.com/openai/swarm/commit/9db581cecaacea0d46a933d6453c312b034dbf47)
 
 > [!WARNING]
 > Swarm is currently an experimental sample framework intended to explore ergonomic interfaces for multi-agent systems. It is not intended to be used in production, and therefore has no official support. (This also means we will not be reviewing PRs or issues!)

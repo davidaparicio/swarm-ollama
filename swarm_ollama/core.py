@@ -26,13 +26,6 @@ from .wrapper import (
 
 __CTX_VARS_NAME__ = "context_variables"
 
-# Initialize Ollama client
-# ollama_client = ollama.Client(host="http://localhost:11434")
-# Wrap Ollama client
-# wrapped_client = OllamaWrapper(ollama_client)
-# Initialize Swarm with wrapped client
-# client = Swarm(client=wrapped_client)
-
 
 class Swarm:
     def __init__(self, base_url="http://localhost:11434", client=None):
@@ -41,7 +34,7 @@ class Swarm:
                 ollama_client = ollama.Client(host=base_url)
                 wrapped_client = OllamaWrapper(ollama_client)
                 self.client = wrapped_client
-            except:
+            except Exception as e:
                 raise ConnectionError(
                     f"Failed to connect to Ollama at {base_url}. "
                     "Make sure Ollama is running and the URL is correct. "
