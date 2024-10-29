@@ -27,6 +27,5 @@ response = client.run(
     messages=[{"role": "user", "content": "I want to talk to agent B."}],
 )
 
-print(response)
-
+# print(response)
 print(response.messages[-1]["content"])
