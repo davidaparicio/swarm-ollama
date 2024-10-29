@@ -15,23 +15,20 @@ Current [Swarm version](https://github.com/openai/swarm): [latest/9db581cecaacea
 
 Requires Python 3.10+
 
-<!--#pip install git+ssh://git@github.com/openai/swarm_ollama.git
-#pip install git+ssh://git@github.com/yashgadbail/swarm-ollama.git-->
-
 ```shell
 pip install git+ssh://git@github.com/davidaparicio/swarm-ollama.git
 ```
 
 or
 
-<!--#pip install git+https://github.com/openai/swarm_ollama.git
-#pip install git+https://github.com/yashgadbail/swarm-ollama.git-->
-
 ```shell
 pip install git+https://git@github.com/davidaparicio/swarm-ollama.git
 ```
 
 ## Usage
+
+Remark: Our [Ollama model](https://ollama.com/search?c=tools) needs [tool support](https://ollama.com/blog/tool-support).
+The list is available on the [Ollama website](https://ollama.com/search?c=tools).
 
 ```python
 from swarm_ollama import Swarm, Agent
@@ -46,14 +43,15 @@ def transfer_to_agent_b():
 
 agent_a = Agent(
     name="Agent A",
-    model="llama3.2:3b",
+    model="llama3.2:3b", # NEED a model with tool support
+    #https://ollama.com/blog/tool-support
     instructions="You are a helpful agent.",
     functions=[transfer_to_agent_b],
 )
 
 agent_b = Agent(
     name="Agent B",
-    model="tinyllama:1.1b",
+    model="llama3.2:3b",
     instructions="Only speak in Haikus.",
 )
 
