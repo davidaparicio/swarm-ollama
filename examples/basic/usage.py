@@ -18,7 +18,7 @@ agent_a = Agent(
 
 agent_b = Agent(
     name="Agent B",
-    model="tinyllama:1.1b",
+    model="llama3.2:3b",
     instructions="Only speak in Haikus.",
 )
 
@@ -26,5 +26,7 @@ response = client.run(
     agent=agent_a,
     messages=[{"role": "user", "content": "I want to talk to agent B."}],
 )
+
+print(response)
 
 print(response.messages[-1]["content"])
