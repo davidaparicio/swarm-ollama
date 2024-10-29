@@ -3,6 +3,9 @@ from httpx import ConnectError
 from ollama._types import ResponseError
 from dataclasses import dataclass
 from typing import Any, Dict, List
+from .logging import setup_logging
+
+logger = setup_logging(__name__)
 
 
 @dataclass
@@ -43,7 +46,6 @@ class Message:
     )
 
     def model_dump_json(self) -> str:
-        # return json.dumps({"content": self.content, "role": self.role})
         data = {
             "content": self.content,
             "role": self.role,
@@ -96,15 +98,6 @@ class WrappedResponse:
                 )
             message.tool_calls = tool_calls
         self.choices = [Choice(message=message)]
-        # message_data = ollama_response.get("message", {})
-        # self.choices = [
-        #     Choice(
-        #         Message(
-        #             content=message_data.get("content", ""),
-        #             role=message_data.get("role", ""),
-        #         )
-        #     )
-        # ]
 
 
 class ChatCompletions:
@@ -119,75 +112,45 @@ class ChatCompletions:
         self.client = client
         self.completions = self
 
-    # def create(
-    #     self, model: str, messages: List[Dict[str, str]], stream: bool = False, **kwargs
-    # ) -> WrappedResponse:
-    def create(self, **kwargs) -> WrappedResponse:
+    def create(
+        self,
+        model: str,
+        messages: List[Dict[str, str]],
+        stream: bool = False,
+        tools: List[Dict[str, Any]] = None,
+        **kwargs,
+    ) -> WrappedResponse:
         """
         Create a chat completion using the specified model and messages.
 
         Args:
-            model (str): The model name.
-            messages (List[Dict[str, str]]): The conversation messages.
+            model (str): The model name to use (e.g., 'llama2:13b')
+            messages (List[Dict[str, str]]): List of conversation messages
             stream (bool, optional): Whether to stream the response. Defaults to False.
+            tools (List[Dict[str, Any]], optional): List of tools/functions available. Defaults to None.
+            **kwargs: Additional arguments passed to Ollama
 
         Returns:
             WrappedResponse: The wrapped response from the Ollama client.
         """
 
-        # Any additional kwargs are ignored or can be handled as needed (like tools)
-
         # Clean and format messages
-        messages = []
-        for msg in kwargs.get("messages", []):
+        clean_messages = []
+        for msg in messages:
             clean_msg = {"role": msg["role"], "content": msg["content"]}
-            messages.append(clean_msg)
-        # messages = []
-        # for msg in kwargs.get("messages", []):
-        #     clean_msg = {"role": msg["role"], "content": msg["content"]}
+            clean_messages.append(clean_msg)
 
-        #     # Handle tool calls differently
-        #     if "tool_calls" in msg:
-        #         clean_msg["tool_calls"] = []
-        #         for tc in msg["tool_calls"]:
-        #             tool_call = {
-        #                 "id": tc.get("id", ""),
-        #                 "type": "function",
-        #                 "function": {
-        #                     "name": tc["function"]["name"],
-        #                     "arguments": tc["function"]["arguments"]
-        #                 }
-        #             }
-        #             clean_msg["tool_calls"].append(tool_call)
-
-        #     # Handle tool responses
-        #     if msg.get("role") == "tool":
-        #         clean_msg = {
-        #             "role": "assistant",
-        #             "content": msg["content"]
-        #         }
-
-        #     messages.append(clean_msg)
-
-        # ollama_kwargs = {
-        #     "model": model,
-        #     "messages": messages,
-        #     #"tools": tools or None,
-        #     #"tool_choice": self.client.tool_choice,
-        #     "stream": stream,
-        # }
-
+        # Any additional kwargs are ignored or can be handled as needed for Ollama (like tools/tool_choice)
         ollama_kwargs = {
-            "model": kwargs.get("model"),
-            "messages": messages,
-            "stream": kwargs.get("stream", False),
-            # Remove tool_choice as it's not supported by Ollama
+            "model": model,
+            "messages": clean_messages,
+            "stream": stream,
         }
 
         # Format tools correctly for Ollama
-        if kwargs.get("tools"):
+        if tools:
             formatted_tools = []
-            for tool in kwargs["tools"]:
+            for tool in tools:
                 formatted_tool = {
                     "type": "function",
                     "function": {
@@ -212,18 +175,16 @@ class ChatCompletions:
                 "messages": ollama_kwargs["messages"],
                 "tools": ollama_kwargs.get("tools", []),
             }
-            print("Sending to Ollama:", json.dumps(debug_request, indent=2))
+            logger.debug(
+                "Sending to Ollama: %s",
+                json.dumps(debug_request, indent=2, ensure_ascii=False),
+            )
 
             response = self.client.chat(**ollama_kwargs)
-
-            # If response contains tool calls, ensure they're properly formatted
-            # if "tool_calls" in response.get("message", {}):
-            #     for tool_call in response["message"]["tool_calls"]:
-            #         if isinstance(tool_call["function"]["arguments"], dict):
-            #             tool_call["function"]["arguments"] = json.dumps(
-            #                 tool_call["function"]["arguments"]
-            #             )
-
+            logger.debug(
+                "Received response: %s",
+                json.dumps(response, indent=2, ensure_ascii=False),
+            )
             # Parse function calls from response content
             if "[" in response.get("message", {}).get("content", ""):
                 content = response["message"]["content"]
@@ -233,7 +194,6 @@ class ChatCompletions:
                     if "(" in function_call and ")" in function_call:
                         func_name = function_call.split("(")[0].strip()
                         func_args = function_call.split("(")[1].split(")")[0].strip()
-
                         # Create tool call structure
                         tool_call = {
                             "id": "call_1",
@@ -243,63 +203,21 @@ class ChatCompletions:
                                 "arguments": "{}" if not func_args else func_args,
                             },
                         }
-
                         # Clean content and add tool calls
                         response["message"]["content"] = content.replace(
                             f"[{function_call}]", ""
                         ).strip()
                         response["message"]["tool_calls"] = [tool_call]
 
-            # Parse function calls from response content
-            # if "tool_calls" in response.get("message", {}):
-            #     tool_calls = []
-            #     for idx, tool_call in enumerate(response["message"]["tool_calls"]):
-            #         tool_calls.append(
-            #             ToolCall(
-            #                 id=tool_call.get("id", f"call_{idx}"),
-            #                 type=tool_call.get("type", "function"),
-            #                 function=Function(
-            #                     name=tool_call["function"]["name"],
-            #                     arguments=tool_call["function"]["arguments"]
-            #                 )
-            #             )
-            #         )
-            #     response["message"]["tool_calls"] = tool_calls
-
-            # if self.tools and "[" in response.get("message", {}).get("content", ""):
-            #     content = response["message"]["content"]
-            #     # Extract function call if present
-            #     if "[" in content and "]" in content:
-            #         function_call = content[content.find("[")+1:content.find("]")]
-            #         if "(" in function_call and ")" in function_call:
-            #             func_name = function_call.split("(")[0].strip()
-            #             func_args = function_call.split("(")[1].split(")")[0].strip()
-
-            #             # Create tool call structure
-            #             tool_call = ToolCall(
-            #                 id="call_1",  # Simple ID for now
-            #                 function=Function(
-            #                     name=func_name,
-            #                     arguments="{}" if not func_args else func_args
-            #                 )
-            #             )
-
-            #             # Clean content and add tool calls
-            #             response["message"]["content"] = content.replace(f"[{function_call}]", "").strip()
-            #             response["message"]["tool_calls"] = [tool_call]
-
-            # response.raise_for_status()
         except ResponseError as e:
             raise NameError(f"LLM model error: {e}")
         except ConnectError as e:
             raise ConnectionError(
                 f"Connection error occurred.. Is the `ollama serve` running?: {e}"
             )
-        # except HTTPStatusError as e:
-        #   raise ConnectionError(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
         except Exception as e:
+            # logger.error("Unexpected error: %s", str(e), exc_info=True)
             raise RuntimeError(f"Failed to get chat response: {e}")
-
         return WrappedResponse(response)
 
 
