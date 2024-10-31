@@ -32,7 +32,7 @@ pip install git+https://git@github.com/davidaparicio/swarm-ollama.git
 
 > [!IMPORTANT]
 > Our [Ollama model](https://ollama.com/search?c=tools) needs [tool support](https://ollama.com/blog/tool-support).
-> The list is available on the [Ollama website](https://ollama.com/search?c=tools).
+> The LLM list is available on the [Ollama website](https://ollama.com/search?c=tools). For SLM (Small/Raspberry), the list is available on the [Parakeet website](https://parakeet-nest.github.io/awesome-slms/).
 > The default model for swarm-ollama is currently "llama3.2:3b".
 
 ```python
