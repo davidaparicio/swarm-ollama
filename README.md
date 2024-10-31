@@ -25,10 +25,15 @@ or
 pip install git+https://git@github.com/davidaparicio/swarm-ollama.git
 ```
 
+> [!NOTE]
+> Due to Ollama message format, the OpenAI Swarm: message['sender'] becomes message['role'].
+
 ## Usage
 
-Remark: Our [Ollama model](https://ollama.com/search?c=tools) needs [tool support](https://ollama.com/blog/tool-support).
-The list is available on the [Ollama website](https://ollama.com/search?c=tools).
+> [!IMPORTANT]
+> Our [Ollama model](https://ollama.com/search?c=tools) needs [tool support](https://ollama.com/blog/tool-support).
+> The list is available on the [Ollama website](https://ollama.com/search?c=tools).
+> The default model for swarm-ollama is currently "llama3.2:3b".
 
 ```python
 from swarm_ollama import Swarm, Agent
@@ -373,3 +378,4 @@ run_demo_loop(agent, stream=True)
 # Inspired by
 - Arrabonae - [Arrabonae](https://github.com/Arrabonae)
 - Yash Gadbail - [yashgadbail](https://github.com/yashgadbail)
+- Marcus Schiesser - [marcusschiesser](https://github.com/marcusschiesser)

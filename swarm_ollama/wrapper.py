@@ -114,8 +114,8 @@ class ChatCompletions:
 
     def create(
         self,
-        model: str,
         messages: List[Dict[str, str]],
+        model: str = "llama3.2:3b",
         stream: bool = False,
         tools: List[Dict[str, Any]] = None,
         **kwargs,
